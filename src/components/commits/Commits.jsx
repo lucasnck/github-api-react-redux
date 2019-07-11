@@ -62,8 +62,6 @@ class Commits extends React.Component {
                             <li key={index}>{index + 1} | <div>{item.commit.committer.date}</div> - <div>{item.sha}</div> <div>{item.commit.message}</div></li>
                         )}
                     </ul>
-                    
-                    <Button onClick={(event) => { this.changePage() }}>{this.props.commits.loading}</Button>
                 </div>
             </section>
         )

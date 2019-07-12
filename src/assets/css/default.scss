@@ -76,3 +76,12 @@ h2 {
 .commit-message span {
   display: block;
 }
+
+@media (max-width: 767px) {
+  #root section .section-content {
+    width: 100%;
+  }
+  .commit-informations span {
+    word-break: break-all;
+  }
+}

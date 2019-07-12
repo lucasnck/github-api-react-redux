@@ -4,38 +4,37 @@ import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { findRepositories, changeSelectedURL } from './RepositoriesActions'
-import { findCommits } from '../commits/CommitsActions'
+import { findCommits, clearCommits } from '../commits/CommitsActions'
 
 //reactstrap
 import { Button } from 'reactstrap';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 
 class Repositories extends React.Component {
 
     constructor(props) {
         super(props)
-        this.findRepositoryCommits = this.findRepositoryCommits.bind(this)
-    }
-    
-    findRepositoryCommits(url) {
-
-        console.log("hahaha", url)
-        console.log(this.props.commits.nextPage)
-        findCommits(url, 1)
-
     }
 
     render() {
+
         return (
             <section id="section-repositories">
-                <div className="container">
-                    <h2>repositories</h2>
-                    <ul>
-                        {this.props.repositories.repositories.map((item, index) =>
-                            <li key={index}>{item.name} | <Button color="success" onClick={ (event) => this.props.findCommits(item.url, 1)}>View</Button></li>
-                        )}
-                    </ul>
-                </div>
+                {this.props.repositories.repositories.length > 0 &&
+                    <div className="container">
+                        <div className="section-content">
+                            <h2>repositories</h2>
+                            <ul>
+                                {this.props.repositories.repositories.map((item, index) =>
+                                    <li key={index}><Button color="link" onClick={(event) => { this.props.clearCommits(); this.props.findCommits(item.url) } }> <FontAwesomeIcon icon={faSearch} /> {item.name}</Button></li>
+                                )}
+                            </ul>
+                        </div>
+                    </div>
+                }
             </section>
         )
     }
@@ -50,7 +49,8 @@ const mapStateToProps = state => ({
 const mapDispathToProps = dispath => bindActionCreators({
     findRepositories,
     findCommits,
-    changeSelectedURL
+    changeSelectedURL,
+    clearCommits
 }, dispath)
 
 export default connect(mapStateToProps, mapDispathToProps)(Repositories)

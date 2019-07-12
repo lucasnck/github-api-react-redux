@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react'
 //redux
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { findCommits, loadCommits } from './CommitsActions'
+import { findCommits, loadCommits, filterCommits } from './CommitsActions'
 
 //reactstrap
-import { Button } from 'reactstrap'
+import { Button, Input } from 'reactstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarAlt, faStream, faComment } from '@fortawesome/free-solid-svg-icons';
 
 class Commits extends React.Component {
 
@@ -55,14 +57,38 @@ class Commits extends React.Component {
 
         return (
             <section id="section-commits">
-                <div className="container">
-                    <h2>commits</h2>
-                    <ul>
-                        {this.props.commits.commits.map((item, index) =>
-                            <li key={index}>{index + 1} | <div>{item.commit.committer.date}</div> - <div>{item.sha}</div> <div>{item.commit.message}</div></li>
-                        )}
-                    </ul>
-                </div>
+                {this.props.commits.commits.length > 0 &&
+                    <div className="container">
+                        <div className="section-content">
+                            <h2>commits</h2>
+                            <Input placeholder="Filter ex: Adjusts"
+                                onChange={this.props.filterCommits}
+                                value={this.props.commits.filterCommitsTerm} />
+                            <ul>
+                                {this.props.filteredCommits.map((item, index) =>
+                                    <li key={index}>
+                                        <div className="commit-item">
+                                            <div className="commit-position">
+                                                {index + 1}
+                                            </div>
+                                            <div className="commit-informations">
+                                                <div className="commit-date">
+                                                    <span><FontAwesomeIcon icon={faCalendarAlt} /> {item.commit.committer.date}</span>
+                                                </div>
+                                                <div className="commit-sha">
+                                                    <span><FontAwesomeIcon icon={faStream} /> {item.sha}</span>
+                                                </div>
+                                                <div className="commit-message">
+                                                    <span><FontAwesomeIcon icon={faComment} /> {item.commit.message}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                )}
+                            </ul>
+                        </div>
+                    </div>
+                }
             </section>
         )
     }
@@ -71,12 +97,29 @@ class Commits extends React.Component {
 
 const mapStateToProps = state => ({
     commits: state.commits,
-    repositories: state.repositories,
+    filteredCommits: filterTree(state.commits.commits, state.commits.filterCommitsTerm.toLowerCase()),
+    repositories: state.repositories
 })
+
+function filterTree(array = [], indicator = '') {
+    return array.filter(function iter(o) {
+        return Object.keys(o).some(function (k) {
+            console.log(o[k])
+            if (typeof o[k] === 'string' && o[k].indexOf(indicator) !== -1) {
+                return true;
+            }
+            if (Array.isArray(o[k])) {
+                o[k] = o[k].filter(iter);
+                return o[k].length;
+            }
+        });
+    });
+}
 
 const mapDispathToProps = dispath => bindActionCreators({
     findCommits,
-    loadCommits
+    loadCommits,
+    filterCommits
 }, dispath)
 
 export default connect(mapStateToProps, mapDispathToProps)(Commits)

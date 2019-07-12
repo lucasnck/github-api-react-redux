@@ -3,11 +3,23 @@ const INITIAL_STATE = {
     nextPage: 1,
     url: '',
     hasEnded: false,
-    loading: false
+    loading: false,
+    filterCommitsTerm: ''
 }
 
 export default function (state = INITIAL_STATE, action) {
     switch (action.type) {
+        case 'CLEAR_COMMITS':
+            return {
+                ...state,
+                commits: [],
+                nextPage: 1,
+                url: '',
+                hasEnded: false,
+                loading: false,
+                filterCommitsTerm: ''
+
+            }
         case 'FIND_COMMITS':
             console.log("find commits", action.payload)
             return {
@@ -23,6 +35,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 loading: true
+            }
+        case 'FILTER_COMMITS':
+            return {
+                ...state,
+                filterCommitsTerm: action.payload
             }
         default:
             return state
